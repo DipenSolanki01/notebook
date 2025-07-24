@@ -1,47 +1,77 @@
-import { useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import Task from "./components/task";
+import Notes from "./components/notes";
+import "./App.css";
 
 
-function Task({text,date,time,id}){
-  const [isdone, setIsdone] = useState(false);
-  return(
-    <>
-    <div className='taskpannel'>
-    <button onClick={()=>setIsdone((prev)=>!prev)}>{isdone?'✅':'⭕'}</button>
-    <div >{text} is due til ⏰{time?time:'not set'} of {date?date:'not set'}</div>
-    <button >🗑️</button>
-    </div>
-    </>
-  )
-}
 
 function App() {
+  const [textData, setTextData] = useState("");
+  const [tasklist, setTasklist] = useState([]);
+  const [date, setDate] = useState("");
+  const [tasktime, setTasktime] = useState("");
 
-  const [textData,setTextData] = useState('')
-  const [tasklist,setTasklist] = useState([])
-  const [date, setDate] = useState('');
-  const [tasktime, setTasktime] = useState('');
-  
+  const handleDelete = (id) => {
+    setTasklist((prev) => prev.filter((_, index) => index !== id));
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+      setTasklist((prev) => [
+        ...prev,
+        { textData, date, tasktime },
+      ]);
+      setTextData("");
+      setDate("");
+      setTasktime("");
+    
+  };
+
   return (
     <>
-      <div className='card'>
-        <div className='herobar'>
-          {/* <form action={(e)=>e.} > */}
-            <input type="text" onChange={(e)=>setTextData(e.target.value)} />
-            <input type="date" onChange={(e)=>setDate(e.target.value)}/>
-            <input type="time" name="time" onChange={(e)=>setTasktime(e.target.value)}/>
-            <button type='submit' onClick={()=>setTasklist((prev)=>prev = [...prev,{textData,date,tasktime}])}>add</button>
-          {/* </form> */}
+      <div className="card todo-container">
+        <div className="herobar">
+          <form onSubmit={handleSubmit}> 
+          <input autoFocus value={textData} placeholder="task" type="text" onChange={(e) => setTextData(e.target.value) } required />
+          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required/>
+          <input
+            type="time"
+            name="time"
+            value={tasktime}
+            onChange={(e) => setTasktime(e.target.value)}
+            required
+          />
+          <button
+            type="submit"
+          >
+            add
+          </button>
+          </form>
         </div>
-        <div>
-          {tasklist.length ? tasklist.map((tasks,index)=>(<Task id ={index} text={tasks.textData} date={tasks.date} time={tasks.tasktime} ></Task>)):<div></div>}
-          </div>
+        <div className="task-list-scroll">
+          {tasklist.length ? (
+            tasklist.map((tasks, index) => (
+              <Task
+                id={index}
+                text={tasks.textData}
+                date={tasks.date}
+                time={tasks.tasktime}
+                onDelete={handleDelete}
+              ></Task>
+            ))
+          ) : (
+            <div className="card"><p>let's start to be productive</p></div>
+          )}
+        </div>
       </div>
-      
+      <div className="notes">
+        <div className="card">
+          <button className="create-notes"  ><p className="emoji">➕</p></button>
+          {/* <Notes /> */}
+        </div>
+        
+      </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
